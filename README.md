@@ -1,6 +1,7 @@
 # RSAI
 ## Introduction
-    This study aims to enhance the dual-task synergy of large language models (LLMs) in customer-merchant review 
+    
+This study aims to enhance the dual-task synergy of large language models (LLMs) in customer-merchant review 
 interpretation generation and survival prediction, thereby advancing intelligent decision-making technologies in 
 vertical domains. As illustrated in Figure 2, our framework innovatively proposes a two-phase knowledge infusion 
 strategy: the Supervised Learning phase (Section 3.1) facilitates domain knowledge transfer, while the Reinforcement 
