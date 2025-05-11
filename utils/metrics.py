@@ -37,12 +37,6 @@ class Metrics:
         self.metrics_dict = {_: task_register(_) for _ in self.tasks}
 
     def add_sample(self, task, input_field_data, output_titles, target_title, list_reward=0.0, vague_mapping=True):
-        print(input_field_data)
-        print('-----------------')
-        print(output_titles)
-        print('-----------------')
-        print()
-        '''
         if output_titles:
             # 获取第一个选择的消息内容
             content = output_titles
@@ -74,7 +68,7 @@ class Metrics:
         self.metrics_dict[task]['ROUGE-SU4'] += ans['ROUGE-SU4']
         print(ans)
         print('-----------------------------')
-        '''
+
 
 
     def __getitem__(self, item):

@@ -48,12 +48,3 @@ if __name__ == '__main__':
         raise NotImplementedError
 
 
-# todo: SFT dynamic data_set single gpu     [√]
-# todo: SFT dynamic data_set multi gpus     [√]
-# todo: SFT static data_file single gpu     [√]
-# todo: SFT static data_file multi gpus     [√]
-
-# todo: RL dynamic data_set single gpu      [√]
-# todo: RL dynamic data_set multi gpus      [√]
-# todo: RL static data_file single gpu      [√]
-# todo: RL static data_file multi gpus      [√]
