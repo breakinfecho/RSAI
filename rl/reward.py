@@ -5,20 +5,6 @@ from base.reward import BaseRewardModel, RewardOutput
 from utils.tools import load_pickle, get_item_ranking, RunningMoments, side_tokenizer, get_output_text, \
     get_complete_text
 
-'''
-{'prediction': 0, 'explanation': "The customer is very dissatisfied with the food quality and service, 
-they mention that the restaurant charged them extra for credit, and the portion size was very small, which is not 
-suitable for the number of people it's intended for.", 'features': ['food quality', 'service', 'portion size', 
-'extra charge']}
-
- {'review': "Food quality is a 4. Im from Chicago and believe Lou malnatis is better. I 
-have this place a 3 due to them charging a dollar for credit. I also ordered a large deep dish and she proceeded to 
-give me on small pouch of peppers and Parmesan. Wtf is that! I asked for more and she gave one more of each. I was 
-speechless and didn't want to keep asking for more. They should know two of each will not cover this large deep dish 
-which is intended for 4-6 people.", 'rating': '3.20', 'survival': '1', 'restaurant_id': '341', 'features': 'Food 
-quality Im Chicago Lou malnatis place dollar credit dish pouch peppers Parmesan Wtf dish people'}
-'''
-
 
 def extract_reviews(data):
     reviews = []
@@ -55,13 +41,13 @@ class RewardModel(BaseRewardModel):
         self.args = args
         self.teacher_port = self.args.teacher_port
         self.tokenizer = tokenizer
-        self.metas = load_pickle(self.args.data_path + 'meta.pickle')
+        # self.metas = load_pickle(self.args.data_path + 'meta.pickle')
         self.title2item = {}
         for _ in self.metas:
             if self.title2item.get(self.metas[_][self.args.item_index]) is None:
                 self.title2item[self.metas[_][self.args.item_index]] = []
             self.title2item[self.metas[_][self.args.item_index]].append(_)
-        self.category2item = load_pickle(self.args.data_path + 'category.pickle')
+        # self.category2item = load_pickle(self.args.data_path + 'category.pickle')
         self.best_ranking_score = [0]
         for i in range(0, self.args.topk * 2):
             self.best_ranking_score.append(self.best_ranking_score[i] + self.ranking_score_func(i) / math.log2(i + 2))
@@ -78,7 +64,7 @@ class RewardModel(BaseRewardModel):
             return 1.0 / math.log2(idx + 2)  # NR-8
 
     def reward_calculate(self, task, input_field_data, title_list):
-        #print(title_list)
+        # print(title_list)
         # ranking_score_frac, task_score_frac = self.args.reward_alpha, 1.0 - self.args.reward_alpha  # NR-13
         # item_count = input_field_data['item_count']
         # repeat_score, exceed_score, not_exist_score, in_history_score, target_score = -1.0, -1.0, -1.0, -1.0, 1.0
@@ -241,7 +227,17 @@ class RewardModel(BaseRewardModel):
         # # res = [list_reward, item_reward*0.3]    # NR-14, 15
         # # res = [list_reward*100, item_reward]    # NR-16
         # res = [item_reward, float(list_reward * 10)]  # NR-20
-        res = [torch.tensor(0.0, device=self.args.gpu), torch.tensor(1.0, device=self.args.gpu)]
+        res = extract_reviews(title_list)
+        if res['prediction'] == input_field_data['survival']:
+            hit_reward = 1
+        else:
+            hit_reward = -1
+        exp_reward = 0
+        match_flags = [x in array2 for x in array1]
+        match_count = sum(match_flags)
+        exp_reward = match_count * 0.8
+        total_reward = hit_reward + exp_reward
+        res = [torch.tensor(0.0, device=self.args.gpu), torch.tensor(total_reward, device=self.args.gpu)]
         # res = [list_reward*10, item_reward*2]    # NR-21
         return res
 
